@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cybersecurity Awareness Cards — Print Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Screen styles ─────────────────────────────────── */
+    body {
+      background: #f0ece6;
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 2rem;
+      color: #1a1008;
+    }
+    .screen-header {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .screen-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #c87d20;
+    }
+    .screen-sub { font-size: 11px; color: #7a5a3a; margin-top: 4px; }
+    .print-btn {
+      padding: 10px 24px;
+      background: #c87d20;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .print-btn:hover { background: #e8a832; }
+    .edit-note {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      background: #fff8ee;
+      border: 1px solid #e8c875;
+      border-left: 4px solid #c87d20;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 11px;
+      color: #7a5a3a;
+      line-height: 1.8;
+    }
+    .edit-note strong { color: #c87d20; }
+
+    /* ── Card sheet layout ─────────────────────────────── */
+    .sheet {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* ── Individual card ───────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #d0c0a8;
+      border-radius: 12px;
+      overflow: hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Card header strip */
+    .card-header {
+      background: #1e1009;
+      padding: 14px 18px 12px;
+    }
+    .card-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+    .card-shop {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #e8a832;
+      line-height: 1.2;
+    }
+    .card-tagline {
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      color: #7a5a3a;
+      margin-top: 2px;
+    }
+    .card-hook {
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: #c87d20;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* Card body */
+    .card-body { padding: 14px 18px 16px; }
+
+    /* Highlight box */
+    .paradox-box {
+      background: #fff8ee;
+      border: 1px solid #e8c875;
+      border-left: 3px solid #c87d20;
+      border-radius: 6px;
+      padding: 9px 12px;
+      margin-bottom: 12px;
+      font-size: 10px;
+      color: #6a4a20;
+      line-height: 1.7;
+    }
+    .paradox-box strong { color: #c87d20; }
+
+    /* Tips section */
+    .tips-title {
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      color: #c87d20;
+      margin-bottom: 8px;
+    }
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 10px;
+      color: #2a1509;
+      line-height: 1.5;
+    }
+    .tip-icon {
+      min-width: 16px;
+      height: 16px;
+      background: #1e1009;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #e8a832;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px dashed #d0c0a8;
+      margin: 12px 0;
+    }
+
+    /* Contact section */
+    .contact-footer { width: 100%; }
+    .contact-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #1e1009;
+      margin-bottom: 2px;
+    }
+    .contact-line {
+      font-size: 9px;
+      color: #4a3020;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .contact-line .ci { color: #c87d20; font-size: 8px; }
+    .personal-note {
+      font-size: 9px;
+      color: #6a4a28;
+      font-style: italic;
+      line-height: 1.65;
+      border-left: 2px solid #e8c875;
+      padding-left: 8px;
+      margin-top: 4px;
+    }
+    .service-tag {
+      display: inline-block;
+      background: #f5f0e8;
+      border: 1px solid #d0c0a8;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 8px;
+      color: #4a3020;
+      margin: 2px 2px 2px 0;
+      line-height: 1.5;
+    }
+
+    /* ── PRINT STYLES ──────────────────────────────────── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+
+      .screen-header,
+      .print-btn,
+      .edit-note { display: none !important; }
+
+      .sheet {
+        max-width: 100%;
+        width: 8.5in;
+        margin: 0;
+        padding: .35in;
+        gap: .2in;
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+      }
+
+      .card {
+        border-radius: 8px;
+        border: 1px solid #d0c0a8;
+      }
+
+      /* Cut lines between cards */
+      .sheet::after {
+        content: '';
+        display: block;
+        position: fixed;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        border-left: 1px dashed #bbb;
+        z-index: -1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Screen-only UI controls -->
+<div class="screen-header">
+  <div>
+    <div class="screen-title">Cybersecurity Awareness Cards</div>
+    <div class="screen-sub">4 cards per 8.5×11 sheet &nbsp;·&nbsp; Print on cardstock for best results</div>
+  </div>
+  <button class="print-btn" onclick="window.print()">&#128438; Print Sheet</button>
+</div>
+
+
+
+<!-- Card sheet (prints 4 per letter page) -->
+<div class="sheet">
+
+  <!-- ── Card 1 ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-top">
+        <div>
+          <div class="card-shop">1855 Coffee House</div>
+          <div class="card-tagline">Birthday Paradox Demo</div>
+        </div>
+        <div class="card-hook">You just<br/>witnessed<br/>a live attack</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="paradox-box">
+        With only <strong>365 possible birthdays</strong>, a collision appeared in just a few customers. Hackers use the same math — the <strong>birthday attack</strong> — to crack password databases in minutes instead of decades.
+      </div>
+
+      <div class="tips-title">5 tips to protect yourself right now</div>
+
+      <div class="tip-item">
+        <div class="tip-icon">1</div>
+        <div><strong>Use a password manager.</strong> Never reuse passwords — one breach exposes everything.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">2</div>
+        <div><strong>Enable 2FA everywhere.</strong> Even a stolen password is useless without your second factor.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">3</div>
+        <div><strong>Verify before you click.</strong> Phishing is the #1 attack vector — hover links before trusting them.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">4</div>
+        <div><strong>Public WiFi is an open room.</strong> Assume someone is listening. Use a VPN.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">5</div>
+        <div><strong>Update everything.</strong> 60% of breaches exploit vulnerabilities with patches already available.</div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="contact-footer">
+        <div class="contact-name">Shannon Hamby</div>
+        <div class="contact-line"><span class="ci">@</span>shambu12sudo62117@proton.me</div>
+        <div class="personal-note">Information security can feel overwhelming to some, unimportant to others, and exciting to a select few—but it is easy for no one. Every action we take on a device carries some level of risk, which is why it is so important to protect yourself and your family online.
+
+I hope the information on this card gave you something useful, practical, or new to think about.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 2 ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-top">
+        <div>
+          <div class="card-shop">1855 Coffee House</div>
+          <div class="card-tagline">Birthday Paradox Demo</div>
+        </div>
+        <div class="card-hook">The math<br/>never lies —<br/>hackers know it</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="paradox-box">
+        A <strong>birthday attack</strong> cracked SSL certificates in 2008 using MD5. Your bank still asks for your birth month on security questions. The same math applies to both.
+      </div>
+
+      <div class="tips-title">5 more things most people get wrong</div>
+
+      <div class="tip-item">
+        <div class="tip-icon">1</div>
+        <div><strong>Security questions are attackable.</strong> "Mother's maiden name" is often public. Use fake answers stored in your password manager.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">2</div>
+        <div><strong>"I have nothing to hide" is a myth.</strong> Your data has value — to advertisers, criminals, and nation-states.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">3</div>
+        <div><strong>SMS 2FA is better than nothing, but not great.</strong> SIM-swapping is real. Use an authenticator app.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">4</div>
+        <div><strong>Freeze your credit.</strong> It's free and makes identity theft dramatically harder.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">5</div>
+        <div><strong>Zero Trust, always.</strong> "Never trust, always verify" — online and in person.</div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="contact-footer">
+        <div class="contact-name">Shannon Hamby</div>
+        <div class="contact-line"><span class="ci">@</span>shambu12sudo62117@proton.me</div>
+        <div class="personal-note">Information security can feel overwhelming to some, unimportant to others, and exciting to a select few—but it is easy for no one. Every action we take on a device carries some level of risk, which is why it is so important to protect yourself and your family online. I hope the information on this card gave you something useful, practical, or new to think about.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 3 ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-top">
+        <div>
+          <div class="card-shop">1855 Coffee House</div>
+          <div class="card-tagline">Birthday Paradox Demo</div>
+        </div>
+        <div class="card-hook">Is your<br/>business<br/>protected?</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="paradox-box">
+        The average cost of a small business data breach is <strong>$4.88M</strong> (IBM 2024). Most originate from a phishing email that took seconds to send and minutes to succeed.
+      </div>
+
+      <div class="tips-title">Services offered</div>
+
+      <div style="margin-bottom:10px">
+        <span class="service-tag">Network Security Assessment</span>
+        <span class="service-tag">Zero Trust Architecture</span>
+        <span class="service-tag">Security Awareness Training</span>
+        <span class="service-tag">Ethical Hacking / Pen Testing</span>
+        <span class="service-tag">Azure / Cloud Security</span>
+        <span class="service-tag">Intune &amp; Endpoint Mgmt</span>
+        <span class="service-tag">Incident Response</span>
+        <span class="service-tag">Firewall &amp; Network Design</span>
+      </div>
+
+      <div class="tips-title">Who I work with</div>
+      <div style="font-size:10px;color:#4a3020;line-height:1.7;margin-bottom:10px">
+        Small businesses &nbsp;·&nbsp; Healthcare practices &nbsp;·&nbsp; Nonprofits<br />
+        Recovery &amp; mental health organizations &nbsp;·&nbsp; Community tech
+      </div>
+
+      <hr class="divider" />
+
+      <div class="contact-footer">
+        <div class="contact-name">Shannon Hamby</div>
+        <div class="contact-line"><span class="ci">@</span>shambu12sudo62117@proton.me</div>
+        <div class="personal-note">Information security can feel overwhelming to some, unimportant to others, and exciting to a select few—but it is easy for no one. Every action we take on a device carries some level of risk, which is why it is so important to protect yourself and your family online.
+
+I hope the information on this card gave you something useful, practical, or new to think about.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 4 ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-top">
+        <div>
+          <div class="card-shop">1855 Coffee House</div>
+          <div class="card-tagline">Birthday Paradox Demo</div>
+        </div>
+        <div class="card-hook">Knowledge<br/>is the best<br/>firewall</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="paradox-box">
+        <strong>94% of malware</strong> is delivered by email. <strong>82% of breaches</strong> involve a human element. The weakest link in any security chain is the one that was never trained.
+      </div>
+
+      <div class="tips-title">For your family &amp; personal life</div>
+
+      <div class="tip-item">
+        <div class="tip-icon">1</div>
+        <div><strong>Talk to your kids about social engineering.</strong> Bad actors target children online first.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">2</div>
+        <div><strong>Check haveibeenpwned.com</strong> to see if your email appeared in a data breach.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">3</div>
+        <div><strong>Review app permissions monthly.</strong> Does your flashlight app need microphone access?</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">4</div>
+        <div><strong>Back up the 3-2-1 way.</strong> 3 copies, 2 media types, 1 offsite. Ransomware loses its leverage.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">5</div>
+        <div><strong>Security awareness training saves lives.</strong> Ask me about a free consultation.</div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="contact-footer">
+        <div class="contact-name">Shannon Hamby</div>
+        <div class="contact-line"><span class="ci">@</span>shambu12sudo62117@proton.me</div>
+        <div class="personal-note">Information security can feel overwhelming to some, unimportant to others, and exciting to a select few—but it is easy for no one. Every action we take on a device carries some level of risk, which is why it is so important to protect yourself and your family online.
+
+I hope the information on this card gave you something useful, practical, or new to think about.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /sheet -->
+
+</body>
+</html>

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>1855 Coffee House — Birthday Paradox Demo</title>
+  <meta name="theme-color" content="#130b06" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: #130b06;
+      color: #f5ede3;
+      font-family: 'IBM Plex Mono', monospace;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 1.4rem 1rem 3rem;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .site-header { text-align: center; margin-bottom: .5rem; }
+    .shop-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e8a832;
+      letter-spacing: .04em;
+    }
+    .shop-tagline {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: #7a5a3a;
+      margin-top: 3px;
+    }
+    .day-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e1009;
+      border: 1px solid #3a2010;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: #a08060;
+      margin-top: 9px;
+    }
+    .day-pill strong { color: #d4952a; }
+    .won-dot { color: #5a9c6a; font-size: 10px; }
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: #2a1509;
+      border-radius: 2px;
+      margin: 12px 0 14px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c87d20, #e8a832);
+      border-radius: 2px;
+      transition: width .5s ease;
+    }
+
+    /* ── Demo banner ─────────────────────────────────────── */
+    .demo-banner {
+      background: #1a0e04;
+      border: 1px solid #5a3a10;
+      border-radius: 13px;
+      padding: 11px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .demo-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .demo-lbl {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      color: #c87d20;
+    }
+    .demo-arrow { font-size: 10px; color: #7a5a3a; transition: transform .2s; }
+    .demo-arrow.open { transform: rotate(180deg); }
+    .demo-body {
+      margin-top: 11px;
+      padding-top: 11px;
+      border-top: 1px solid #3a2010;
+      font-size: 10.5px;
+      color: #a08060;
+      line-height: 1.85;
+    }
+    .demo-body strong { color: #e8a832; }
+    .demo-math {
+      background: #130b06;
+      border-left: 3px solid #c87d20;
+      border-radius: 6px;
+      padding: 9px 12px;
+      margin: 9px 0;
+      font-size: 10px;
+      color: #d4952a;
+      line-height: 2;
+    }
+    .live-stat { color: #e8a832; font-weight: 600; }
+
+    /* ── Card shell ──────────────────────────────────────── */
+    .card {
+      background: #1e1009;
+      border: 1px solid #3a2010;
+      border-radius: 14px;
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 15px;
+      border-bottom: 1px solid #3a2010;
+    }
+    .card-label { font-size: 9px; text-transform: uppercase; letter-spacing: .2em; color: #7a5a3a; }
+    .card-stat  { font-size: 13px; color: #d4952a; }
+    .card-stat.green { color: #5a9c6a; }
+
+    /* ── Ask prompt ──────────────────────────────────────── */
+    .ask-wrap { padding: 14px 15px 10px; text-align: center; }
+    .ask-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: #f5ede3;
+      margin-bottom: 3px;
+    }
+    .ask-sub { font-size: 10px; color: #7a5a3a; letter-spacing: .05em; }
+
+    /* ── Step indicator ──────────────────────────────────── */
+    .step-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 6px 15px 10px;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3a2010;
+      transition: background .2s;
+    }
+    .step-dot.active { background: #d4952a; }
+    .step-dot.done   { background: #5a9c6a; }
+    .step-line { flex: 1; max-width: 40px; height: 1px; background: #3a2010; }
+
+    /* ── Selected month chip (shown on day step) ─────────── */
+    .month-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 15px 10px;
+      background: #2a1509;
+      border: 1px solid #d4952a;
+      border-radius: 9px;
+      padding: 9px 13px;
+    }
+    .month-chip-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #e8a832;
+    }
+    .month-chip-back {
+      font-size: 10px;
+      color: #7a5a3a;
+      cursor: pointer;
+      padding: 3px 8px;
+      border: 1px solid #3a2010;
+      border-radius: 6px;
+      transition: all .15s;
+    }
+    .month-chip-back:hover { border-color: #c87d20; color: #c87d20; }
+
+    /* ── Month grid (3 × 4) ──────────────────────────────── */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      padding: 6px 14px 14px;
+    }
+    .month-btn {
+      background: #2a1509;
+      border: 1px solid #3a2010;
+      border-radius: 9px;
+      padding: 13px 4px;
+      font-size: .78rem;
+      font-weight: 500;
+      color: #f5ede3;
+      cursor: pointer;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: all .1s;
+      user-select: none;
+      position: relative;
+    }
+    .month-btn:active { background: #3a2010; transform: scale(.93); }
+    /* Dot indicator: month has ≥1 entry seen */
+    .month-btn .dot-ind {
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #c87d20;
+      display: none;
+    }
+    .month-btn.has-entries .dot-ind { display: block; }
+
+    /* ── Day grid (7 columns) ────────────────────────────── */
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      padding: 4px 12px 14px;
+    }
+    .day-btn {
+      background: #2a1509;
+      border: 1px solid #3a2010;
+      border-radius: 7px;
+      padding: 10px 0;
+      font-size: .75rem;
+      font-weight: 500;
+      color: #f5ede3;
+      cursor: pointer;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: all .1s;
+      user-select: none;
+    }
+    .day-btn:active { background: #3a2010; transform: scale(.9); }
+    .day-btn.invalid { opacity: .2; cursor: default; pointer-events: none; }
+    /* Day already entered for this month */
+    .day-btn.seen-day {
+      background: #3a1a05;
+      border-color: #c87d20;
+      color: #e8a832;
+    }
+
+    /* ── Probability meter ───────────────────────────────── */
+    .prob-section {
+      padding: 10px 15px 13px;
+      border-top: 1px solid #3a2010;
+    }
+    .prob-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 7px;
+    }
+    .prob-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .18em; color: #7a5a3a; }
+    .prob-val { font-size: 1rem; font-weight: 500; color: #d4952a; transition: color .3s; }
+    .prob-val.hot { color: #e8a832; }
+    .prob-track { height: 8px; background: #2a1509; border-radius: 4px; overflow: hidden; }
+    .prob-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #5a9c6a, #d4952a 55%, #e8a832);
+      transition: width .4s ease;
+    }
+
+    /* ── Won summary ─────────────────────────────────────── */
+    .won-summary { padding: 20px 15px; text-align: center; }
+    .won-cup  { font-size: 2.6rem; display: block; margin-bottom: 9px; }
+    .won-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #e8a832; margin-bottom: 5px; }
+    .won-detail { font-size: 11px; color: #7a5a3a; line-height: 1.8; }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a1509;
+      border: 1px solid #c87d20;
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-size: 12px;
+      color: #f5ede3;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 50;
+      animation: toastIn .2s ease;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+    }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      cursor: pointer;
+      border: 1px solid #3a2010;
+      background: transparent;
+      color: #a08060;
+      transition: all .15s;
+      margin-top: 10px;
+    }
+    .btn:hover { border-color: #c87d20; color: #e8a832; }
+    .btn.primary { background: #c87d20; border-color: #e8a832; color: #1e0a03; }
+    .btn.primary:hover { background: #e8a832; }
+    .btn.danger { color: #c04040; border-color: #7a2020; }
+    .btn.danger:hover { background: #2a0808; }
+
+    /* ── Admin ───────────────────────────────────────────── */
+    .toggle-link {
+      text-align: center;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      color: #5a3a20;
+      cursor: pointer;
+      padding: 12px 0 6px;
+      transition: color .15s;
+    }
+    .toggle-link:hover { color: #d4952a; }
+    .admin-card {
+      background: #1e1009;
+      border: 1px solid #3a2010;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 6px;
+    }
+    .admin-ttl { font-size: 9px; text-transform: uppercase; letter-spacing: .2em; color: #d4952a; margin-bottom: 11px; }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #2a1509;
+      font-size: 12px;
+    }
+    .stat-row:last-of-type { border: none; }
+    .sk { color: #7a5a3a; }
+    .sv { color: #f5ede3; }
+    .hist-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #2a1509;
+      font-size: 11px;
+    }
+    .hist-row:last-child { border: none; }
+    .hist-won { color: #5a9c6a; }
+    .hist-no  { color: #c04040; }
+
+    /* ── Winner screen ───────────────────────────────────── */
+    .winner-view { padding: .75rem 0 2rem; }
+    .winner-cup {
+      font-size: 4.5rem;
+      display: block;
+      text-align: center;
+      margin-bottom: 9px;
+      animation: cupBounce .7s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes cupBounce {
+      from { transform: scale(.3) translateY(30px); opacity: 0; }
+      to   { transform: scale(1)  translateY(0);    opacity: 1; }
+    }
+    .winner-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #e8a832;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .winner-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: #7a5a3a;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .winner-box {
+      background: #1e1009;
+      border: 2px solid #d4952a;
+      border-radius: 14px;
+      padding: 17px 20px;
+      max-width: 330px;
+      margin: 0 auto 13px;
+    }
+    .wlbl { font-size: 9px; text-transform: uppercase; letter-spacing: .2em; color: #7a5a3a; margin-bottom: 3px; }
+    .wval { font-size: 1.35rem; font-weight: 500; color: #f5ede3; margin-bottom: 11px; }
+    .wval:last-child { margin-bottom: 0; }
+    .wprize { font-family: 'Playfair Display', serif; font-size: .9rem; font-style: italic; color: #d4952a; }
+
+    /* ── Security reveal ─────────────────────────────────── */
+    .security-reveal {
+      background: #1a0e04;
+      border: 1px solid #5a3a10;
+      border-radius: 12px;
+      padding: 13px 15px;
+      max-width: 360px;
+      margin: 0 auto 15px;
+      font-size: 11px;
+      color: #a08060;
+      line-height: 1.85;
+    }
+    .security-reveal .sr-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      color: #c87d20;
+      margin-bottom: 7px;
+    }
+    .security-reveal strong { color: #e8a832; }
+    .winner-btns { max-width: 330px; margin: 0 auto; }
+
+    /* ── Done screen ─────────────────────────────────────── */
+    .done-view { text-align: center; padding: 3.5rem 0 2rem; }
+    .done-icon { font-size: 3.5rem; display: block; margin-bottom: 16px; }
+    .done-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: #e8a832; margin-bottom: 10px; }
+    .done-body { font-size: 11px; color: #7a5a3a; line-height: 1.9; margin-bottom: 24px; }
+    .done-link { color: #d4952a; font-size: 11px; text-decoration: none; }
+
+    /* ── Loading ─────────────────────────────────────────── */
+    .loading-view { text-align: center; padding: 5rem 0; }
+    .loading-text { font-size: 10px; color: #5a3a20; text-transform: uppercase; letter-spacing: .2em; margin-top: 14px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- LOADING -->
+  <div id="view-loading" class="loading-view">
+    <span style="font-size:2.5rem">☕</span>
+    <div class="loading-text">Brewing…</div>
+  </div>
+
+  <!-- DAILY -->
+  <div id="view-daily" class="hidden">
+    <div class="site-header">
+      <div class="shop-name">1855 Coffee House</div>
+      <div class="shop-tagline">Birthday Paradox Live Demo</div>
+      <div style="display:flex;justify-content:center">
+        <div class="day-pill">
+          Day <strong id="d-day-num">1</strong> of 30
+          <span class="won-dot hidden" id="d-won-dot">● won</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="d-progress" style="width:0%"></div>
+    </div>
+
+    <!-- Demo info banner -->
+    <div class="demo-banner" id="demo-toggle">
+      <div class="demo-top">
+        <span class="demo-lbl">&#9654; What is a birthday attack?</span>
+        <span class="demo-arrow" id="demo-arrow">&#9660;</span>
+      </div>
+      <div class="demo-body hidden" id="demo-body">
+        A <strong>birthday attack</strong> is a real cryptographic exploit — used to crack MD5, SHA-1, and other hashing algorithms — named directly after this paradox.<br /><br />
+        The insight: you don't need to find your <em>specific</em> hash. You just need <em>any two inputs</em> that collide. With <strong>365 possible birthdays</strong>, the math is:
+        <div class="demo-math">
+          Possible values (d): <strong>365 birthdays</strong><br />
+          50% collision chance at: <strong>23 people</strong><br />
+          99% collision chance at: <strong>57 people</strong><br />
+          Expected first match: customer <strong>#23</strong>
+        </div>
+        Right now: <span class="live-stat" id="dm-live">0 customers — 0.0% chance</span><br /><br />
+        This is the same math that let researchers <strong>forge SSL certificates</strong> using MD5 collisions in 2008 — and why NIST deprecated SHA-1 for code signing in 2016. We just compressed the proof into a coffee line.
+      </div>
+    </div>
+
+    <!-- Won card -->
+    <div id="d-won-card" class="card hidden">
+      <div class="card-header">
+        <span class="card-label">Day status</span>
+        <span class="card-stat green">&#10003; Winner found</span>
+      </div>
+      <div class="won-summary">
+        <span class="won-cup">☕</span>
+        <div class="won-title">Coffee awarded!</div>
+        <div class="won-detail" id="d-won-detail"></div>
+      </div>
+    </div>
+
+    <!-- Entry card -->
+    <div id="d-entry-card" class="card">
+      <div class="card-header">
+        <span class="card-label" id="d-entry-lbl">Ask: "When is your birthday?"</span>
+        <span class="card-stat" id="d-cust-count">0 customers</span>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="step-bar">
+        <div class="step-dot" id="step1-dot"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" id="step2-dot"></div>
+      </div>
+
+      <!-- Ask prompt -->
+      <div class="ask-wrap">
+        <div class="ask-main" id="ask-main">Step 1 — tap the month</div>
+        <div class="ask-sub" id="ask-sub">No year needed &nbsp;·&nbsp; Month and day only</div>
+      </div>
+
+      <!-- Month grid (shown on step 1) -->
+      <div class="month-grid" id="d-month-grid"></div>
+
+      <!-- Day section (shown on step 2) -->
+      <div id="d-day-section" class="hidden">
+        <div class="month-chip">
+          <span class="month-chip-name" id="selected-month-name">—</span>
+          <span class="month-chip-back" id="btn-back-month">&#8592; change</span>
+        </div>
+        <div class="day-grid" id="d-day-grid"></div>
+      </div>
+
+      <!-- Probability bar -->
+      <div class="prob-section">
+        <div class="prob-top">
+          <span class="prob-lbl">Collision probability</span>
+          <span class="prob-val" id="d-prob-val">0.0%</span>
+        </div>
+        <div class="prob-track">
+          <div class="prob-fill" id="d-prob-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-link" id="toggle-admin">&#9660; barista controls</div>
+    <div id="admin-panel" class="hidden">
+      <div class="admin-card">
+        <div class="admin-ttl">&#9881; Controls &amp; info</div>
+        <div class="stat-row"><span class="sk">Possible birthdays</span><span class="sv">365</span></div>
+        <div class="stat-row"><span class="sk">50% collision at</span><span class="sv">23 customers</span></div>
+        <div class="stat-row"><span class="sk">99% collision at</span><span class="sv">57 customers</span></div>
+        <div class="stat-row"><span class="sk">Customers today</span><span class="sv" id="a-today">0</span></div>
+        <div class="stat-row"><span class="sk">Days remaining</span><span class="sv" id="a-rem">30</span></div>
+        <button class="btn primary hidden" id="btn-next-day">–</button>
+        <button class="btn hidden" id="btn-complete-all">Mark giveaway complete</button>
+        <button class="btn danger hidden" id="btn-skip-day">Skip today — no winner</button>
+        <div id="hist-section" class="hidden" style="margin-top:16px">
+          <div class="admin-ttl">&#128203; History</div>
+          <div id="hist-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINNER -->
+  <div id="view-winner" class="hidden">
+    <div class="site-header" style="margin-bottom:.75rem">
+      <div class="shop-name">1855 Coffee House</div>
+      <div class="shop-tagline">Birthday Paradox Live Demo</div>
+    </div>
+    <div class="winner-view">
+      <span class="winner-cup">☕</span>
+      <div class="winner-heading">We have a winner!</div>
+      <div class="winner-sub" id="w-sub">Birthday paradox triggered</div>
+      <div class="winner-box">
+        <div class="wlbl">Matching birthday</div>
+        <div class="wval" id="w-bday" style="font-size:1.4rem">–</div>
+        <div class="wlbl">Triggered at customer</div>
+        <div class="wval" id="w-cust-n">–</div>
+        <div class="wprize">1 free coffee — compliments of 1855 Coffee House ☕</div>
+      </div>
+      <div class="security-reveal">
+        <div class="sr-title">&#9888; The security lesson</div>
+        You shared your <strong>birthday</strong> — just a month and a day. No year, no name. Yet out of only <strong><span id="wr-n">?</span> people</strong>, the math found a match.<br /><br />
+        In cryptography, this is a <strong>birthday attack</strong>. Attackers don't crack <em>your</em> password hash — they generate millions of inputs until <em>any two</em> collide. With a weak hash function, that happens far sooner than anyone expects.<br /><br />
+        <strong>Take a card.</strong> The 23-person rule applies to your accounts right now.
+      </div>
+      <div class="winner-btns">
+        <button class="btn primary" id="btn-award">Coffee awarded — back to daily view</button>
+        <button class="btn hidden" id="btn-winner-next">–</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="view-done" class="hidden">
+    <div class="done-view">
+      <span class="done-icon">&#127942;</span>
+      <div class="done-title">Giveaway complete</div>
+      <div class="done-body">
+        30 days. 30 free coffees.<br />
+        30 times the birthday paradox proved itself true<br />
+        in a coffee line, live, with real people's birthdays.
+      </div>
+      <a href="https://www.facebook.com/profile.php?id=100073466632116"
+         target="_blank" rel="noopener" class="done-link">
+        Visit 1855 Coffee House on Facebook &rarr;
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ── Constants ──────────────────────────────────────────── */
+  const TOTAL_DAYS = 30;
+
+  const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun',
+                        'Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTHS_FULL  = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+  const DAYS_IN_MONTH = [31,29,31,30,31,30,31,31,30,31,30,31]; // Feb=29 incl leap
+
+  /* ── Math ───────────────────────────────────────────────── */
+  function bProb(n, d) {
+    if (n < 2) return 0;
+    return 1 - Math.exp(-(n * (n - 1)) / (2 * d));
+  }
+
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+
+  function formatBday(key) { // "03-15" → "March 15th"
+    const [m, d] = key.split('-').map(Number);
+    return MONTHS_FULL[m - 1] + ' ' + ordinal(d);
+  }
+
+  /* ── Storage ────────────────────────────────────────────── */
+  function sget(k){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch{ return null; } }
+  function sset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
+
+  /* ── State ──────────────────────────────────────────────── */
+  let currentDay  = 1;
+  let entries     = [];   // array of "MM-DD" strings
+  let winner      = null;
+  let history     = [];
+  let adminOpen   = false;
+  let demoOpen    = false;
+  let selectedMonth = null; // 0-indexed, null = on month step
+
+  /* ── DOM helpers ────────────────────────────────────────── */
+  const $  = id => document.getElementById(id);
+  const show = id => $(id).classList.remove('hidden');
+  const hide = id => $(id).classList.add('hidden');
+  const text = (id, t) => $(id).textContent = t;
+
+  function showView(name) {
+    ['loading','daily','winner','done'].forEach(v => {
+      $(('view-' + v)).classList[v === name ? 'remove' : 'add']('hidden');
+    });
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.add('hidden'), 2700);
+  }
+
+  /* ── Step transitions ───────────────────────────────────── */
+  function goToMonthStep() {
+    selectedMonth = null;
+    $('step1-dot').className = 'step-dot active';
+    $('step2-dot').className = 'step-dot';
+    text('ask-main', 'Step 1 — tap the month');
+    text('ask-sub', 'No year needed · Month and day only');
+    show('d-month-grid');
+    hide('d-day-section');
+    renderMonthGrid();
+  }
+
+  function goToDayStep(monthIdx) {
+    selectedMonth = monthIdx;
+    $('step1-dot').className = 'step-dot done';
+    $('step2-dot').className = 'step-dot active';
+    text('ask-main', 'Step 2 — tap the day');
+    text('ask-sub', MONTHS_FULL[monthIdx] + ' — choose a day');
+    text('selected-month-name', MONTHS_FULL[monthIdx]);
+    hide('d-month-grid');
+    show('d-day-section');
+    renderDayGrid(monthIdx);
+  }
+
+  /* ── Render month grid ──────────────────────────────────── */
+  function renderMonthGrid() {
+    const grid = $('d-month-grid');
+    grid.innerHTML = '';
+
+    // Build set of months that have at least 1 entry seen
+    const seenMonths = new Set(entries.map(e => parseInt(e.split('-')[0]) - 1));
+
+    MONTHS_SHORT.forEach((m, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'month-btn' + (seenMonths.has(i) ? ' has-entries' : '');
+      btn.innerHTML = m + '<span class="dot-ind"></span>';
+      btn.addEventListener('click', () => goToDayStep(i));
+      grid.appendChild(btn);
+    });
+  }
+
+  /* ── Render day grid ────────────────────────────────────── */
+  function renderDayGrid(monthIdx) {
+    const grid = $('d-day-grid');
+    grid.innerHTML = '';
+
+    const maxDays = DAYS_IN_MONTH[monthIdx];
+    const mm = String(monthIdx + 1).padStart(2, '0');
+
+    // Set of days already seen for this month
+    const seenDays = new Set(
+      entries
+        .filter(e => e.startsWith(mm + '-'))
+        .map(e => parseInt(e.split('-')[1]))
+    );
+
+    for (let d = 1; d <= 31; d++) {
+      const btn = document.createElement('div');
+      const isValid = d <= maxDays;
+      btn.className = 'day-btn' +
+        (!isValid ? ' invalid' : '') +
+        (isValid && seenDays.has(d) ? ' seen-day' : '');
+      btn.textContent = d;
+      if (isValid) {
+        btn.addEventListener('click', () => selectDay(monthIdx, d));
+      }
+      grid.appendChild(btn);
+    }
+  }
+
+  /* ── Handle day selection ───────────────────────────────── */
+  function selectDay(monthIdx, day) {
+    if (winner) { showToast("Today's winner has already been found"); return; }
+
+    const mm  = String(monthIdx + 1).padStart(2, '0');
+    const dd  = String(day).padStart(2, '0');
+    const key = mm + '-' + dd;
+
+    const newEntries = [...entries, key];
+
+    if (entries.includes(key)) {
+      // 🎉 Collision → winner
+      const w = { code: key, n: newEntries.length };
+      sset('cg-day-' + currentDay, { entries: newEntries, winner: w });
+      entries = newEntries;
+      winner  = w;
+      goToMonthStep();
+      showWinnerView();
+    } else {
+      sset('cg-day-' + currentDay, { entries: newEntries, winner: null });
+      entries = newEntries;
+      showToast('Customer #' + newEntries.length + ' — ' + formatBday(key) + ' logged');
+      goToMonthStep();
+      updateDailyView();
+    }
+  }
+
+  /* ── Update daily view ──────────────────────────────────── */
+  function updateDailyView() {
+    const n    = entries.length;
+    const prob = bProb(n, 365);
+    const pct  = (prob * 100).toFixed(1);
+
+    text('d-day-num', currentDay);
+    $('d-progress').style.width = (((currentDay - 1) / TOTAL_DAYS) * 100) + '%';
+    text('d-cust-count', n + ' customer' + (n !== 1 ? 's' : ''));
+    text('d-prob-val', pct + '%');
+    $('d-prob-val').className = 'prob-val' + (prob > 0.5 ? ' hot' : '');
+    $('d-prob-fill').style.width = (prob * 100) + '%';
+    text('a-today', n);
+    text('a-rem', TOTAL_DAYS - currentDay + (winner ? 0 : 1));
+    text('dm-live', n + ' customer' + (n !== 1 ? 's' : '') + ' — ' + pct + '% collision probability');
+
+    if (winner) {
+      hide('d-entry-card');
+      show('d-won-card');
+      $('d-won-dot').classList.remove('hidden');
+      text('d-won-detail',
+        formatBday(winner.code) + ' matched at customer #' + winner.n + '.\n' +
+        (currentDay < TOTAL_DAYS
+          ? 'Ready for Day ' + (currentDay + 1) + ' tomorrow.'
+          : 'All 30 days complete!'));
+      hide('btn-skip-day');
+      if (currentDay < TOTAL_DAYS) {
+        show('btn-next-day');
+        hide('btn-complete-all');
+        text('btn-next-day', 'Start Day ' + (currentDay + 1) + ' \u2192');
+      } else {
+        hide('btn-next-day');
+        show('btn-complete-all');
+      }
+    } else {
+      show('d-entry-card');
+      hide('d-won-card');
+      $('d-won-dot').classList.add('hidden');
+      hide('btn-next-day');
+      hide('btn-complete-all');
+      show('btn-skip-day');
+    }
+
+    updateHistoryPanel();
+  }
+
+  /* ── History ─────────────────────────────────────────────── */
+  function updateHistoryPanel() {
+    const list = $('hist-list');
+    if (history.length === 0) { hide('hist-section'); return; }
+    show('hist-section');
+    list.innerHTML = '';
+    history.forEach(h => {
+      const row = document.createElement('div');
+      row.className = 'hist-row';
+      const tag = h.winner
+        ? `<span class="hist-won">won — ${formatBday(h.winner.code)} (#${(h.entries||[]).length})</span>`
+        : `<span class="hist-no">no winner</span>`;
+      row.innerHTML = `<span class="sk">Day ${h.day}</span>${tag}`;
+      list.appendChild(row);
+    });
+  }
+
+  /* ── Winner view ─────────────────────────────────────────── */
+  function showWinnerView() {
+    text('w-sub', 'Birthday paradox triggered · Day ' + currentDay + ' of ' + TOTAL_DAYS);
+    text('w-bday', formatBday(winner.code));
+    text('w-cust-n', '#' + winner.n + ' today');
+    text('wr-n', winner.n);
+    const btnNext = $('btn-winner-next');
+    if (currentDay < TOTAL_DAYS) {
+      show('btn-winner-next');
+      text('btn-winner-next', 'Advance to Day ' + (currentDay + 1) + ' \u2192');
+    } else {
+      hide('btn-winner-next');
+    }
+    showView('winner');
+  }
+
+  /* ── Next day ────────────────────────────────────────────── */
+  function nextDay() {
+    if (currentDay >= TOTAL_DAYS) { showView('done'); return; }
+    const next = currentDay + 1;
+    sset('cg-current-day', next);
+    if (entries.length > 0 || winner) {
+      history = [...history, { day: currentDay, entries, winner }];
+    }
+    currentDay = next;
+    entries    = [];
+    winner     = null;
+    adminOpen  = false;
+    demoOpen   = false;
+    hide('admin-panel');
+    hide('demo-body');
+    $('demo-arrow').className = 'demo-arrow';
+    text('toggle-admin', '\u25bc barista controls');
+    goToMonthStep();
+    showToast('Day ' + next + ' of ' + TOTAL_DAYS + ' started');
+    updateDailyView();
+    showView('daily');
+  }
+
+  /* ── Boot ────────────────────────────────────────────────── */
+  function boot() {
+    showView('loading');
+    currentDay = sget('cg-current-day') || 1;
+    const dd   = sget('cg-day-' + currentDay);
+    entries    = (dd && dd.entries) || [];
+    winner     = (dd && dd.winner)  || null;
+    const hist = [];
+    for (let i = 1; i < currentDay; i++) {
+      const h = sget('cg-day-' + i);
+      if (h) hist.push({ day: i, ...h });
+    }
+    history = hist;
+    if (currentDay > TOTAL_DAYS) { showView('done'); return; }
+    goToMonthStep();
+    updateDailyView();
+    showView('daily');
+  }
+
+  /* ── Events ──────────────────────────────────────────────── */
+  $('demo-toggle').addEventListener('click', () => {
+    demoOpen = !demoOpen;
+    $('demo-body').classList[demoOpen ? 'remove' : 'add']('hidden');
+    $('demo-arrow').className = 'demo-arrow' + (demoOpen ? ' open' : '');
+  });
+
+  $('btn-back-month').addEventListener('click', () => goToMonthStep());
+
+  $('toggle-admin').addEventListener('click', () => {
+    adminOpen = !adminOpen;
+    $('admin-panel').classList[adminOpen ? 'remove' : 'add']('hidden');
+    text('toggle-admin', (adminOpen ? '\u25b2' : '\u25bc') + ' barista controls');
+  });
+
+  $('btn-next-day').addEventListener('click', nextDay);
+  $('btn-complete-all').addEventListener('click', () => showView('done'));
+  $('btn-skip-day').addEventListener('click', () => {
+    if (!confirm('End Day ' + currentDay + ' without a winner?')) return;
+    nextDay();
+  });
+  $('btn-award').addEventListener('click', () => {
+    updateDailyView();
+    goToMonthStep();
+    showView('daily');
+  });
+  $('btn-winner-next').addEventListener('click', nextDay);
+
+  boot();
+})();
+</script>
+</body>
+</html>
